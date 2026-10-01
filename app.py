@@ -30,7 +30,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Código de la Interfaz con los ajustes solicitados
+# 3. Código de la Interfaz con Soporte Móvil y Tablet
 HTML_APP = """
 <!DOCTYPE html>
 <html lang="es">
@@ -68,6 +68,10 @@ HTML_APP = """
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #1E293B; }
     .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); }
+    
+    /* Ocultar barra de desplazamiento manteniendo el scroll táctil */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-slate-50 text-slate-800">
@@ -91,55 +95,69 @@ HTML_APP = """
     </div>
   </header>
 
-  <!-- Navbar Principal: SIN el texto 'Universidad de Cuenca' debajo de TutorU -->
-  <nav class="sticky top-0 z-40 glass-nav border-b border-slate-200 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
+  <!-- Navbar Principal RESPONSIVO: Adaptado a Móvil, Tablet y Desktop -->
+  <nav class="sticky top-0 z-40 glass-nav border-b border-slate-200 shadow-sm transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between py-2.5 lg:py-0 lg:h-20 gap-2.5 lg:gap-4">
         
-        <!-- Identidad Visual limpia sin subtítulo -->
-        <div class="flex items-center gap-3 cursor-pointer" onclick="setActiveTab('explore')">
-          <div class="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-ucuenca-wine to-ucuenca-winedark text-white shadow-md">
-            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-            <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-ucuenca-navy rounded-full border-2 border-white flex items-center justify-center text-[9px] font-bold text-white">U</span>
+        <!-- Fila 1 en móvil/tablet: Logo a la izquierda, Saldo y Perfil a la derecha -->
+        <div class="flex items-center justify-between w-full lg:w-auto">
+          <div class="flex items-center gap-2.5 cursor-pointer flex-shrink-0" onclick="setActiveTab('explore')">
+            <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-ucuenca-wine to-ucuenca-winedark text-white shadow-md">
+              <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+              <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-ucuenca-navy rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-white">U</span>
+            </div>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-xl sm:text-2xl font-black tracking-tight text-ucuenca-navy">Tutor<span class="text-ucuenca-wine">U</span></span>
+              <span class="text-[9px] font-bold tracking-widest text-white uppercase bg-ucuenca-navy px-1.5 py-0.5 rounded">OFICIAL</span>
+            </div>
           </div>
-          <div class="flex items-baseline gap-1.5">
-            <span class="text-2xl font-black tracking-tight text-ucuenca-navy">Tutor<span class="text-ucuenca-wine">U</span></span>
-            <span class="text-[10px] font-bold tracking-widest text-white uppercase bg-ucuenca-navy px-1.5 py-0.5 rounded">OFICIAL</span>
+
+          <!-- Saldo y Avatar en Móvil y Tablet -->
+          <div class="flex items-center gap-2 lg:hidden">
+            <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl p-1 pr-2.5 gap-1.5 shadow-sm">
+              <button onclick="openDepositModal()" class="w-6 h-6 rounded-lg bg-ucuenca-wine/10 text-ucuenca-wine flex items-center justify-center text-xs">
+                <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+              </button>
+              <span id="user-balance-display-mobile" class="text-xs font-black text-ucuenca-navy">$24.50</span>
+            </div>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120&q=80" class="w-8 h-8 rounded-xl object-cover ring-2 ring-ucuenca-navy/20">
           </div>
         </div>
 
-        <!-- Botones de Navegación -->
-        <div class="hidden lg:flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 gap-1">
-          <button id="nav-btn-explore" onclick="setActiveTab('explore')" class="px-3.5 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 bg-white text-ucuenca-navy shadow-sm">
+        <!-- Fila 2 en móvil/tablet (o centro en desktop): Las 5 pestañas de secciones SIEMPRE VISIBLES -->
+        <div class="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 gap-1 overflow-x-auto no-scrollbar w-full lg:w-auto flex-nowrap scroll-smooth">
+          <button id="nav-btn-explore" onclick="setActiveTab('explore')" class="px-3 py-1.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 bg-white text-ucuenca-navy shadow-sm whitespace-nowrap flex-shrink-0">
             <i data-lucide="compass" class="w-4 h-4 text-ucuenca-wine"></i>
             Explorar Tutores
           </button>
           
-          <button id="nav-btn-community" onclick="setActiveTab('community')" class="px-3.5 py-2 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5">
+          <button id="nav-btn-community" onclick="setActiveTab('community')" class="px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0">
             <i data-lucide="message-square" class="w-4 h-4"></i>
             Muro Comunitario
           </button>
 
           <!-- Sección propia "Pedir Ayuda" -->
-          <button id="nav-btn-request" onclick="setActiveTab('request')" class="px-3.5 py-2 text-xs font-bold rounded-xl text-white bg-ucuenca-wine hover:bg-ucuenca-winedark transition-all flex items-center gap-1.5 shadow-sm">
+          <button id="nav-btn-request" onclick="setActiveTab('request')" class="px-3 py-1.5 text-xs font-bold rounded-xl text-white bg-ucuenca-wine hover:bg-ucuenca-winedark transition-all flex items-center gap-1.5 shadow-sm whitespace-nowrap flex-shrink-0">
             <i data-lucide="plus-circle" class="w-4 h-4 text-amber-300"></i>
             Pedir Ayuda
           </button>
 
-          <button id="nav-btn-betutor" onclick="setActiveTab('betutor')" class="px-3.5 py-2 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5">
+          <button id="nav-btn-betutor" onclick="setActiveTab('betutor')" class="px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0">
             <i data-lucide="award" class="w-4 h-4"></i>
             Quiero Ser Tutor
           </button>
 
-          <button id="nav-btn-classes" onclick="setActiveTab('classes')" class="px-3.5 py-2 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5 relative">
+          <button id="nav-btn-classes" onclick="setActiveTab('classes')" class="px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5 relative whitespace-nowrap flex-shrink-0">
             <i data-lucide="calendar" class="w-4 h-4"></i>
             Mis Clases
             <span id="badge-clases-count" class="ml-1 px-1.5 py-0.2 bg-ucuenca-navy text-white text-[10px] font-bold rounded-full">1</span>
           </button>
         </div>
 
-        <!-- Billetera y Perfil -->
-        <div class="flex items-center gap-3">
+        <!-- Saldo y Perfil en Desktop (pantallas grandes) -->
+        <div class="hidden lg:flex items-center gap-3 flex-shrink-0">
           <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl p-1 pr-3 gap-2 shadow-sm">
             <button onclick="openDepositModal()" class="w-7 h-7 rounded-lg bg-ucuenca-wine/10 text-ucuenca-wine hover:bg-ucuenca-wine hover:text-white flex items-center justify-center transition" title="Recargar">
               <i data-lucide="wallet" class="w-4 h-4"></i>
@@ -153,9 +171,9 @@ HTML_APP = """
 
           <div class="flex items-center gap-2.5 pl-2 border-l border-slate-200">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120&q=80" class="w-10 h-10 rounded-xl object-cover ring-2 ring-ucuenca-navy/20 shadow-sm">
-            <div class="hidden md:flex flex-col text-left">
+            <div class="flex flex-col text-left">
               <div class="flex items-center gap-1">
-                <span class="text-xs font-bold text-ucuenca-navy">Juanita Perez</span>
+                <span class="text-xs font-bold text-ucuenca-navy">David Vera</span>
                 <i data-lucide="check-circle" class="w-3 h-3 text-ucuenca-wine"></i>
               </div>
               <span class="text-[10px] font-semibold text-slate-500">Admin. Empresas</span>
@@ -167,25 +185,23 @@ HTML_APP = """
     </div>
   </nav>
 
-  <!-- Hero Banner Azul Marino: SOLO LOGO BLANCO UCUENCA Y MARCA DE AGUA UC -->
-  <section class="relative bg-gradient-to-r from-ucuenca-navy via-[#102d52] to-ucuenca-navydark text-white overflow-hidden py-10 px-4 sm:px-6 lg:px-8 border-b border-ucuenca-navylight/30">
-    <!-- Marca de agua circular UC conservada en el fondo -->
+  <!-- Hero Banner Azul Marino: LOGO BLANCO UCUENCA Y MARCA DE AGUA UC -->
+  <section class="relative bg-gradient-to-r from-ucuenca-navy via-[#102d52] to-ucuenca-navydark text-white overflow-hidden py-8 sm:py-10 px-4 sm:px-6 lg:px-8 border-b border-ucuenca-navylight/30">
     <div class="absolute -right-12 -bottom-16 opacity-10 pointer-events-none select-none">
       <div class="w-80 h-80 rounded-full border-[18px] border-white flex items-center justify-center">
         <span class="text-8xl font-black">UC</span>
       </div>
     </div>
 
-    <!-- Contenedor donde antes iban las letras: Ahora únicamente el logo blanco UCUENCA -->
-    <div class="max-w-7xl mx-auto relative z-10 flex items-center justify-start py-2">
-      <h1 class="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-white select-none uppercase font-['Plus_Jakarta_Sans'] leading-none">
+    <div class="max-w-7xl mx-auto relative z-10 flex items-center justify-start">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white select-none uppercase font-['Plus_Jakarta_Sans'] leading-none">
         UCUENCA
       </h1>
     </div>
   </section>
 
   <!-- Contenedor Principal de Vistas -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
 
     <!-- 1. VISTA: EXPLORAR TUTORES -->
     <div id="view-explore" class="space-y-6">
@@ -576,6 +592,14 @@ HTML_APP = """
       }
     ];
 
+    function updateBalanceUI() {
+      const formatted = `$${userBalance.toFixed(2)}`;
+      const d1 = document.getElementById('user-balance-display');
+      const d2 = document.getElementById('user-balance-display-mobile');
+      if (d1) d1.textContent = formatted;
+      if (d2) d2.textContent = formatted;
+    }
+
     function renderTutors(list) {
       const container = document.getElementById('tutors-grid');
       document.getElementById('tutor-count-badge').textContent = list.length;
@@ -728,7 +752,7 @@ HTML_APP = """
       });
 
       document.querySelectorAll('[id^="nav-btn-"]').forEach(btn => {
-        btn.className = "px-3.5 py-2 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5";
+        btn.className = "px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-ucuenca-navy transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0";
       });
 
       const activeView = document.getElementById(`view-${tabKey}`);
@@ -737,9 +761,9 @@ HTML_APP = """
       const activeBtn = document.getElementById(`nav-btn-${tabKey}`);
       if (activeBtn) {
         if (tabKey === 'request') {
-          activeBtn.className = "px-3.5 py-2 text-xs font-bold rounded-xl text-white bg-ucuenca-wine hover:bg-ucuenca-winedark transition-all flex items-center gap-1.5 shadow-sm";
+          activeBtn.className = "px-3 py-1.5 text-xs font-bold rounded-xl text-white bg-ucuenca-wine hover:bg-ucuenca-winedark transition-all flex items-center gap-1.5 shadow-sm whitespace-nowrap flex-shrink-0";
         } else {
-          activeBtn.className = "px-3.5 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 bg-white text-ucuenca-navy shadow-sm";
+          activeBtn.className = "px-3 py-1.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 bg-white text-ucuenca-navy shadow-sm whitespace-nowrap flex-shrink-0";
         }
       }
 
@@ -759,7 +783,7 @@ HTML_APP = """
       const desc = document.getElementById('req-desc').value;
 
       misSolicitudes.unshift({ id: Date.now(), materia, desc, paga, plazo, postulantes: 0 });
-      communityPosts.unshift({ id: Date.now(), author: "Juanita Perez", course: materia, text: desc, bounty: paga });
+      communityPosts.unshift({ id: Date.now(), author: "David Vera", course: materia, text: desc, bounty: paga });
 
       e.target.reset();
       renderMisSolicitudes();
@@ -776,7 +800,7 @@ HTML_APP = """
 
       tutorsData.unshift({
         id: Date.now(),
-        name: "Juanita Perez",
+        name: "David Vera",
         facultyKey: "economicas",
         facultyLabel: "Ciencias Económicas y Adm.",
         course: materia,
@@ -835,7 +859,7 @@ HTML_APP = """
         return;
       }
       userBalance -= selectedTutor.hourlyRate;
-      document.getElementById('user-balance-display').textContent = `$${userBalance.toFixed(2)}`;
+      updateBalanceUI();
 
       bookedClasses.unshift({
         id: Date.now(),
@@ -865,7 +889,7 @@ HTML_APP = """
       const val = parseFloat(document.getElementById('deposit-val').value);
       if (val > 0) {
         userBalance += val;
-        document.getElementById('user-balance-display').textContent = `$${userBalance.toFixed(2)}`;
+        updateBalanceUI();
         closeDepositModal();
         showToast(`+${val.toFixed(2)} USD acreditados a tu billetera`, "success");
       }
@@ -883,6 +907,7 @@ HTML_APP = """
     window.addEventListener('DOMContentLoaded', () => {
       renderTutors(tutorsData);
       renderMisSolicitudes();
+      updateBalanceUI();
       lucide.createIcons();
     });
   </script>
@@ -890,5 +915,5 @@ HTML_APP = """
 </html>
 """
 
-# 4. Renderizado en Streamlit
-components.html(HTML_APP, height=1350, scrolling=True)
+# 4. Renderizado con altura completa dentro de Streamlit
+components.html(HTML_APP, height=1400, scrolling=True)
